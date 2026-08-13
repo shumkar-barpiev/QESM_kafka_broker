@@ -10,6 +10,8 @@ import org.oristool.petrinet.Place;
 import org.oristool.petrinet.Transition;
 
 public class KafkaBrokerModel {
+	private static final int FULL_BATCH_SIZE = 3;
+
 	public static void build(PetriNet net, Marking marking) {
 
 		// Generating Nodes
@@ -35,12 +37,14 @@ public class KafkaBrokerModel {
 		net.addPostcondition(T_DispatchPartial_1, P_BatchService);
 		net.addPrecondition(P_Timeroff, T_StartTimeout);
 		net.addPostcondition(T_Timeout, P_TimeoutExpired);
-		net.addPrecondition(P_Buffer, T_DispatchFullActive);
+		net.addPrecondition(P_Buffer, T_DispatchFullActive, FULL_BATCH_SIZE);
 		net.addPrecondition(P_Buffer, T_DispatchPartial_1);
+		net.addInhibitorArc(P_Buffer, T_DispatchPartial_1, 2);
 		net.addPrecondition(P_BrokerIdle, T_DispatchPartial_2);
 		net.addPrecondition(P_TimerActive, T_Timeout);
-		net.addPrecondition(P_TimerActive, T_DispatchPartial_2);
-		net.addPrecondition(P_Buffer, T_DispatchPartial_2);
+		net.addPrecondition(P_TimeoutExpired, T_DispatchPartial_2);
+		net.addPrecondition(P_Buffer, T_DispatchPartial_2, 2);
+		net.addInhibitorArc(P_Buffer, T_DispatchPartial_2, FULL_BATCH_SIZE);
 		net.addPrecondition(P_TimeoutExpired, T_DispatchPartial_1);
 		net.addPrecondition(P_TimeoutExpired, T_DispatchFullExpired);
 		net.addPostcondition(T_StartTimeout, P_TimerActive);
@@ -48,27 +52,30 @@ public class KafkaBrokerModel {
 		net.addPrecondition(P_Buffer, T_StartTimeout);
 		net.addPostcondition(T_DispatchFullActive, P_BrokerBusy);
 		net.addPostcondition(ArrivalAccepted, P_Buffer);
+		net.addInhibitorArc(P_Buffer, ArrivalAccepted, FULL_BATCH_SIZE);
 		net.addPrecondition(P_BrokerIdle, T_DispatchPartial_1);
 		net.addPrecondition(P_BrokerIdle, T_DispatchFullExpired);
 		net.addPrecondition(P_TimerActive, T_DispatchFullActive);
-		net.addPostcondition(T_DispatchFullActive, P_BatchService);
+		net.addPostcondition(T_DispatchFullActive, P_BatchService, FULL_BATCH_SIZE);
 		net.addPrecondition(P_BrokerIdle, T_DispatchFullActive);
 		net.addPostcondition(T_StartTimeout, P_Buffer);
 		net.addPostcondition(T_DispatchFullExpired, P_Timeroff);
 		net.addPostcondition(T_DispatchFullActive, P_Timeroff);
 		net.addPostcondition(T_DispatchPartial_1, P_BrokerBusy);
-		net.addPrecondition(P_Buffer, T_DispatchFullExpired);
+		net.addPrecondition(P_Buffer, T_DispatchFullExpired, FULL_BATCH_SIZE);
 		net.addPostcondition(T_DispatchPartial_1, P_Timeroff);
-		net.addPostcondition(T_DispatchFullExpired, P_BatchService);
+		net.addPostcondition(T_DispatchFullExpired, P_BatchService, FULL_BATCH_SIZE);
 		net.addPostcondition(T_DispatchPartial_2, P_Timeroff);
 		net.addPostcondition(T_DispatchPartial_2, P_BrokerBusy);
-		net.addPostcondition(T_DispatchPartial_2, P_BatchService);
+		net.addPostcondition(T_DispatchPartial_2, P_BatchService, 2);
 		net.addPrecondition(P_BrokerBusy, T_Send1);
 		net.addPrecondition(P_BatchService, T_Send1);
+		net.addInhibitorArc(P_BatchService, T_Send1, 2);
 		net.addPrecondition(P_BrokerBusy, T_Send2);
-		net.addPrecondition(P_BatchService, T_Send2);
+		net.addPrecondition(P_BatchService, T_Send2, 2);
+		net.addInhibitorArc(P_BatchService, T_Send2, FULL_BATCH_SIZE);
 		net.addPrecondition(P_BrokerBusy, T_Send3);
-		net.addPrecondition(P_BatchService, T_Send3);
+		net.addPrecondition(P_BatchService, T_Send3, FULL_BATCH_SIZE);
 		net.addPostcondition(T_Send3, P_BrokerIdle);
 		net.addPostcondition(T_Send2, P_BrokerIdle);
 		net.addPostcondition(T_Send1, P_BrokerIdle);
