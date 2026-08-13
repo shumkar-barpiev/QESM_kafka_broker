@@ -10,9 +10,44 @@ import org.oristool.petrinet.Place;
 import org.oristool.petrinet.Transition;
 
 public class KafkaBrokerModel {
-	private static final int FULL_BATCH_SIZE = 3;
+	public static final int FULL_BATCH_SIZE = 3;
+
+	public record Parameters(
+			BigDecimal arrivalRate,
+			BigDecimal timeout,
+			BigDecimal send1Rate,
+			BigDecimal send2Rate,
+			BigDecimal send3Rate) {
+
+		public Parameters {
+			requirePositive(arrivalRate, "arrivalRate");
+			requirePositive(timeout, "timeout");
+			requirePositive(send1Rate, "send1Rate");
+			requirePositive(send2Rate, "send2Rate");
+			requirePositive(send3Rate, "send3Rate");
+		}
+
+		private static void requirePositive(BigDecimal value, String name) {
+			if (value == null || value.signum() <= 0) {
+				throw new IllegalArgumentException(name + " must be greater than zero");
+			}
+		}
+
+		public static Parameters baseline() {
+			return new Parameters(
+					BigDecimal.ONE,
+					BigDecimal.ONE,
+					BigDecimal.ONE,
+					BigDecimal.ONE,
+					BigDecimal.ONE);
+		}
+	}
 
 	public static void build(PetriNet net, Marking marking) {
+		build(net, marking, Parameters.baseline());
+	}
+
+	public static void build(PetriNet net, Marking marking, Parameters parameters) {
 
 		// Generating Nodes
 		Place P_BatchService = net.addPlace("P_BatchService");
@@ -89,7 +124,7 @@ public class KafkaBrokerModel {
 		marking.setTokens(P_TimerActive, 0);
 		marking.setTokens(P_Timeroff, 1);
 		ArrivalAccepted.addFeature(
-				StochasticTransitionFeature.newExponentialInstance(new BigDecimal("1"), MarkingExpr.from("1", net)));
+				StochasticTransitionFeature.newExponentialInstance(parameters.arrivalRate(), MarkingExpr.from("1", net)));
 		T_DispatchFullActive.addFeature(
 				StochasticTransitionFeature.newDeterministicInstance(new BigDecimal("0"), MarkingExpr.from("1", net)));
 		T_DispatchFullActive.addFeature(new Priority(0));
@@ -103,16 +138,16 @@ public class KafkaBrokerModel {
 				StochasticTransitionFeature.newDeterministicInstance(new BigDecimal("0"), MarkingExpr.from("1", net)));
 		T_DispatchPartial_2.addFeature(new Priority(0));
 		T_Send1.addFeature(
-				StochasticTransitionFeature.newExponentialInstance(new BigDecimal("1"), MarkingExpr.from("1", net)));
+				StochasticTransitionFeature.newExponentialInstance(parameters.send1Rate(), MarkingExpr.from("1", net)));
 		T_Send2.addFeature(
-				StochasticTransitionFeature.newExponentialInstance(new BigDecimal("1"), MarkingExpr.from("1", net)));
+				StochasticTransitionFeature.newExponentialInstance(parameters.send2Rate(), MarkingExpr.from("1", net)));
 		T_Send3.addFeature(
-				StochasticTransitionFeature.newExponentialInstance(new BigDecimal("1"), MarkingExpr.from("1", net)));
+				StochasticTransitionFeature.newExponentialInstance(parameters.send3Rate(), MarkingExpr.from("1", net)));
 		T_StartTimeout.addFeature(
 				StochasticTransitionFeature.newDeterministicInstance(new BigDecimal("0"), MarkingExpr.from("1", net)));
 		T_StartTimeout.addFeature(new Priority(0));
 		T_Timeout.addFeature(
-				StochasticTransitionFeature.newDeterministicInstance(new BigDecimal("1"), MarkingExpr.from("1", net)));
+				StochasticTransitionFeature.newDeterministicInstance(parameters.timeout(), MarkingExpr.from("1", net)));
 		T_Timeout.addFeature(new Priority(0));
 	}
 }
