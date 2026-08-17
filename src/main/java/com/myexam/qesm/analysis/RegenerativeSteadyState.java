@@ -1,4 +1,4 @@
-package com.myexam.qesm.experiments.steady;
+package com.myexam.qesm.analysis;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -17,18 +17,18 @@ import com.myexam.qesm.kafka.KafkaBrokerModel;
 import com.myexam.qesm.kafka.KafkaBrokerModel.Parameters;
 
 /**
- * Runs regenerative steady-state analyses for the current B=3 Kafka model.
+ * Runs Sirio regenerative steady-state analysis for the bounded B=3 Kafka model.
  */
-public final class SteadyStateExperiment {
+public final class RegenerativeSteadyState {
 	private static final MathContext MC = MathContext.DECIMAL64;
 	private static final List<BigDecimal> ARRIVAL_RATES = decimals("0.25", "0.5", "1", "2");
 	private static final List<BigDecimal> TIMEOUTS = decimals("1", "3", "5");
 
-	private SteadyStateExperiment() {
+	private RegenerativeSteadyState() {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(ExperimentResult.csvHeader());
+		System.out.println(SteadyStateResult.csvHeader());
 
 		for (BigDecimal arrivalRate : ARRIVAL_RATES) {
 			for (BigDecimal timeout : TIMEOUTS) {
@@ -44,7 +44,7 @@ public final class SteadyStateExperiment {
 		}
 	}
 
-	public static ExperimentResult run(Parameters parameters) {
+	public static SteadyStateResult run(Parameters parameters) {
 		PetriNet net = new PetriNet();
 		Marking initialMarking = new Marking();
 		KafkaBrokerModel.build(net, initialMarking, parameters);
@@ -59,7 +59,7 @@ public final class SteadyStateExperiment {
 		return calculateMetrics(net, solution.getSteadyState(), parameters);
 	}
 
-	private static ExperimentResult calculateMetrics(
+	private static SteadyStateResult calculateMetrics(
 			PetriNet net,
 			Map<Marking, BigDecimal> probabilities,
 			Parameters parameters) {
@@ -116,7 +116,7 @@ public final class SteadyStateExperiment {
 		BigDecimal totalSystemTime = divide(
 				averageBuffer.add(averageInService, MC), effectiveArrivalRate);
 
-		return new ExperimentResult(
+		return new SteadyStateResult(
 				parameters.arrivalRate(),
 				parameters.timeout(),
 				probabilities.size(),
@@ -138,7 +138,7 @@ public final class SteadyStateExperiment {
 		return java.util.Arrays.stream(values).map(BigDecimal::new).toList();
 	}
 
-	public record ExperimentResult(
+	public record SteadyStateResult(
 			BigDecimal arrivalRate,
 			BigDecimal timeout,
 			int states,

@@ -110,16 +110,12 @@ qesm/
     ├── main/java/com/myexam/qesm/
     │   ├── kafka/
     │   │   └── KafkaBrokerModel.java
-    │   └── experiments/
-    │       ├── steady/
-    │       │   └── SteadyStateExperiment.java
-    │       └── transientanalysis/
-    │           └── TransientExperiment.java
+    │   └── analysis/
+    │       ├── RegenerativeSteadyState.java
+    │       └── RegenerativeTransient.java
     └── test/java/com/myexam/qesm/
         └── AppTest.java
 ```
-
-The package name `transientanalysis` is used because `transient` is a reserved word in Java.
 
 ## 8. Build and test
 
@@ -137,9 +133,9 @@ The command should finish with:
 BUILD SUCCESS
 ```
 
-## 9. Steady-state experiment
+## 9. Regenerative steady-state analysis
 
-Steady-state analysis studies the long-run behaviour of the model. It does not focus on the first few seconds after startup.
+Regenerative steady-state analysis studies the long-run behaviour of the bounded STPN model. It does not focus on the first few seconds after startup.
 
 The current experiment uses:
 
@@ -157,14 +153,14 @@ Run it with:
 
 ```bash
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
-  -Dexec.mainClass=com.myexam.qesm.experiments.steady.SteadyStateExperiment
+  -Dexec.mainClass=com.myexam.qesm.analysis.RegenerativeSteadyState
 ```
 
 Save the output:
 
 ```bash
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
-  -Dexec.mainClass=com.myexam.qesm.experiments.steady.SteadyStateExperiment \
+  -Dexec.mainClass=com.myexam.qesm.analysis.RegenerativeSteadyState \
   > steady-results.csv
 ```
 
@@ -196,9 +192,9 @@ The effective arrival rate is used because the model stops accepting arrivals wh
 - Under high traffic, the buffer reaches three messages more often.
 - Message throughput should be close to the effective arrival rate in a stable model.
 
-## 10. Transient experiment
+## 10. Regenerative transient analysis
 
-Transient analysis studies how the model changes over time after it starts from an empty state.
+Regenerative transient analysis studies how the bounded STPN model changes over time after it starts from an empty state.
 
 The current experiment uses:
 
@@ -216,14 +212,14 @@ Run it with:
 
 ```bash
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
-  -Dexec.mainClass=com.myexam.qesm.experiments.transientanalysis.TransientExperiment
+  -Dexec.mainClass=com.myexam.qesm.analysis.RegenerativeTransient
 ```
 
 Save the output:
 
 ```bash
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
-  -Dexec.mainClass=com.myexam.qesm.experiments.transientanalysis.TransientExperiment \
+  -Dexec.mainClass=com.myexam.qesm.analysis.RegenerativeTransient \
   > transient-results.csv
 ```
 
@@ -286,4 +282,3 @@ Possible next steps are:
 3. Add stronger automatic model tests.
 4. Plot the steady-state and transient CSV files.
 5. Compare model results with measurements from a small Kafka test.
-
