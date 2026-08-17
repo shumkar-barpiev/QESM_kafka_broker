@@ -98,7 +98,7 @@ The model has these parameters:
 | $\mu_2$ | Service rate for a two-message batch |
 | $\mu_3$ | Service rate for a three-message batch |
 
-The default values are all equal to `1`. Experiment classes can give different values to the model.
+The default values are all equal to `1`. Analysis classes can give different values to the model.
 
 ## 7. Project structure
 
@@ -106,6 +106,10 @@ The default values are all equal to `1`. Experiment classes can give different v
 qesm/
 ├── pom.xml
 ├── README.md
+├── draw_plots.ipynb
+├── outcomes/
+│   ├── steady-results.csv
+│   └── transient-results.csv
 └── src/
     ├── main/java/com/myexam/qesm/
     │   ├── kafka/
@@ -159,9 +163,11 @@ mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
 Save the output:
 
 ```bash
+mkdir -p outcomes
+
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
   -Dexec.mainClass=com.myexam.qesm.analysis.RegenerativeSteadyState \
-  > steady-results.csv
+  > outcomes/steady-results.csv
 ```
 
 ### Steady-state metrics
@@ -218,9 +224,11 @@ mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
 Save the output:
 
 ```bash
+mkdir -p outcomes
+
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
   -Dexec.mainClass=com.myexam.qesm.analysis.RegenerativeTransient \
-  > transient-results.csv
+  > outcomes/transient-results.csv
 ```
 
 ### Transient metrics
@@ -268,7 +276,7 @@ Use these checks before accepting the results:
 - The model has one broker and one batch service process.
 - There are no Kafka partitions, replicas, acknowledgements, retries, or network failures.
 - Producer and consumer behaviour is simplified.
-- The three service rates are currently equal in the experiments.
+- The three service rates are currently equal in the analyses.
 - The timeout is deterministic, but real system timing can contain more variation.
 
 These limits are intentional. The project studies the main relationship between traffic, timeout, batch size, throughput, and waiting time.
