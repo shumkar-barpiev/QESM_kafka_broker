@@ -10,6 +10,8 @@ The model helps us study a basic trade-off:
 
 This is a study model. It does not reproduce the complete Kafka system.
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/shumkar-barpiev/QESM_kafka_broker/blob/main/draw_plots.ipynb)
+
 ## 1. Tools
 
 The project uses:
@@ -111,14 +113,13 @@ qesm/
 │   ├── steady-results.csv
 │   └── transient-results.csv
 └── src/
-    ├── main/java/com/myexam/qesm/
-    │   ├── kafka/
-    │   │   └── KafkaBrokerModel.java
-    │   └── analysis/
-    │       ├── RegenerativeSteadyState.java
-    │       └── RegenerativeTransient.java
-    └── test/java/com/myexam/qesm/
-        └── AppTest.java
+    └── main/java/com/myexam/qesm/
+        ├── kafka/
+        │   └── KafkaBrokerModel.java
+        └── analysis/
+            ├── RegenerativeSteadyState.java
+            └── RegenerativeTransient.java
+    
 ```
 
 ## 8. Build and test
@@ -254,7 +255,32 @@ mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
 - Cumulative completed messages against time.
 - Buffer-size probabilities as a stacked chart.
 
-## 11. Validation checks
+## 11. Open the plots in Google Colab
+
+The file [`draw_plots.ipynb`](draw_plots.ipynb) reads the two CSV files from the `outcomes/` folder and creates the steady-state and transient plots.
+
+### Open directly
+
+Click the **Open in Colab** badge near the top of this README, or use this link:
+
+[Open `draw_plots.ipynb` in Google Colab](https://colab.research.google.com/github/shumkar-barpiev/QESM_kafka_broker/blob/main/draw_plots.ipynb)
+
+### Open manually from Colab
+
+1. Open [Google Colab](https://colab.research.google.com/).
+2. Select **File → Open notebook**.
+3. Select the **GitHub** tab.
+4. Paste this complete GitHub URL into the search field:
+
+   ```text
+   https://github.com/shumkar-barpiev/QESM_kafka_broker/blob/main/draw_plots.ipynb
+   ```
+
+5. Press Enter and select `draw_plots.ipynb` from the result.
+
+Use the complete URL. A partial path such as `QESM_kafka_broker/blob/main/draw_plots.ipynb` may not return a result.
+
+## 12. Validation checks
 
 Use these checks before accepting the results:
 
@@ -268,7 +294,7 @@ Use these checks before accepting the results:
 8. Under low traffic, timeout dispatch should be more important.
 9. Under high traffic, full-batch dispatch should be more important.
 
-## 12. Current limitations
+## 13. Current limitations
 
 - The model uses a message-count limit, while real Kafka commonly defines batch size in bytes.
 - The current model supports only $B=3$.
@@ -281,12 +307,3 @@ Use these checks before accepting the results:
 
 These limits are intentional. The project studies the main relationship between traffic, timeout, batch size, throughput, and waiting time.
 
-## 13. Next steps
-
-Possible next steps are:
-
-1. Generate the model for different values of $B$.
-2. Define service time as a function of batch size.
-3. Add stronger automatic model tests.
-4. Plot the steady-state and transient CSV files.
-5. Compare model results with measurements from a small Kafka test.
