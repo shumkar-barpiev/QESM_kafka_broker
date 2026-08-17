@@ -1,4 +1,4 @@
-package com.myexam.qesm.experiments.transientanalysis;
+package com.myexam.qesm.analysis;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,15 +16,15 @@ import com.myexam.qesm.kafka.KafkaBrokerModel;
 import com.myexam.qesm.kafka.KafkaBrokerModel.Parameters;
 
 /**
- * Examines startup behaviour from an empty broker before steady state is reached.
+ * Runs Sirio regenerative transient analysis from the initial empty broker state.
  */
-public final class TransientExperiment {
+public final class RegenerativeTransient {
 	private static final BigDecimal TIME_BOUND = new BigDecimal("15");
 	private static final BigDecimal TIME_STEP = new BigDecimal("0.5");
 	private static final BigDecimal TIMEOUT = new BigDecimal("3");
 	private static final List<BigDecimal> ARRIVAL_RATES = decimals("0.25", "1", "2");
 
-	private TransientExperiment() {
+	private RegenerativeTransient() {
 	}
 
 	public static void main(String[] args) {
